@@ -9,30 +9,27 @@
   <body>
     <main class="page">
       <section id="homeSection" class="card">
-        <h1>맹구와 토킹어바웃</h1>
-        <p class="muted">링크 공유 + 입장코드로 4명까지 참여할 수 있습니다.</p>
-
-        <div class="actions">
-          <button id="createRoomBtn" class="btn primary">새 방 만들기</button>
+        <div class="page-title">
+          <h1>맹구와 토킹어바웃</h1>
+          <p class="muted">링크 공유 + 입장코드로 4명까지 참여할 수 있습니다.</p>
         </div>
-
         <form id="goRoomForm" class="row">
           <input
             id="roomIdInput"
             name="roomId"
             type="text"
-            placeholder="방 ID 입력 (예: team-chat-1)"
+            placeholder="방 ID 입력"
             maxlength="40"
             required
           />
-          <button class="btn" type="submit">방으로 이동</button>
+          <button class="btn" type="submit">시작</button>
         </form>
       </section>
 
       <section id="chatSection" class="card hidden">
         <header class="chatHeader">
           <div id="roomInfoBlock">
-            <h2 id="roomTitle">채팅방</h2>
+            <h2 id="roomTitle">😎</h2>
             <p class="muted" id="roomHint"></p>
           </div>
         </header>

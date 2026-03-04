@@ -3,7 +3,6 @@ const roomIdFromPath = roomMatch ? roomMatch[1] : null;
 
 const homeSection = document.getElementById('homeSection');
 const chatSection = document.getElementById('chatSection');
-const createRoomBtn = document.getElementById('createRoomBtn');
 const goRoomForm = document.getElementById('goRoomForm');
 const roomIdInput = document.getElementById('roomIdInput');
 
@@ -53,10 +52,6 @@ function showToast(text) {
 
 function escapeRoomId(value) {
   return value.trim().replace(/[^A-Za-z0-9_-]/g, '').slice(0, 40);
-}
-
-function randomRoomId() {
-  return `room-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 function formatTime(iso) {
@@ -408,10 +403,6 @@ if (savedJoinState) {
     fromRestore: true
   });
 }
-
-createRoomBtn.addEventListener('click', () => {
-  moveToRoom(randomRoomId());
-});
 
 goRoomForm.addEventListener('submit', (event) => {
   event.preventDefault();
