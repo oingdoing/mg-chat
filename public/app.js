@@ -293,6 +293,29 @@ function handlePaste(event) {
   }
 }
 
+function handleMessageKeydown(event) {
+  if (event.key !== 'Enter' || event.isComposing) {
+    return;
+  }
+
+  // Alt+Enter keeps the default newline behavior.
+  if (event.altKey) {
+    return;
+  }
+
+  event.preventDefault();
+  if (!joined) {
+    return;
+  }
+
+  if (typeof messageForm.requestSubmit === 'function') {
+    messageForm.requestSubmit();
+    return;
+  }
+
+  messageForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+}
+
 if (roomIdFromPath) {
   showRoom();
   setJoinedState(false);
@@ -320,6 +343,7 @@ goRoomForm.addEventListener('submit', (event) => {
 joinForm.addEventListener('submit', joinRoom);
 messageForm.addEventListener('submit', sendText);
 messageInput.addEventListener('paste', handlePaste);
+messageInput.addEventListener('keydown', handleMessageKeydown);
 
 imageBtn.addEventListener('click', () => {
   imageInput.click();
