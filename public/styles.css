@@ -247,6 +247,11 @@ textarea {
 .message.system {
   background: var(--system);
   border-style: dashed;
+  color: #001bd4;
+  text-align: center;
+}
+.message.system .messageHeader{
+  justify-content: center;
 }
 
 .message img {
@@ -299,7 +304,7 @@ textarea {
   }
 
   .chatMain {
-    height: min(65vh, 560px);
+    height: min(85vh, 880px);
   }
 
   .messageActions {
