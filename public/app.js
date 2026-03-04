@@ -31,6 +31,7 @@ const toast = document.getElementById('toast');
 
 const socket = io();
 const SIDEBAR_PREF_KEY = 'ephemeral_chat_sidebar_collapsed';
+const JOIN_STATE_KEY = 'ephemeral_chat_join_state_v1';
 const DEFAULT_LIMITS = {
   maxImageMB: 2,
   maxTextLength: 500
@@ -141,6 +142,88 @@ function applyLimits(limits) {
   messageInput.maxLength = String(roomLimits.maxTextLength);
 }
 
+function saveJoinState(state) {
+  try {
+    window.sessionStorage.setItem(JOIN_STATE_KEY, JSON.stringify(state));
+  } catch (_err) {
+    // Ignore storage failures.
+  }
+}
+
+function clearJoinState() {
+  try {
+    window.sessionStorage.removeItem(JOIN_STATE_KEY);
+  } catch (_err) {
+    // Ignore storage failures.
+  }
+}
+
+function loadJoinStateForCurrentRoom() {
+  if (!currentRoomId) {
+    return null;
+  }
+
+  try {
+    const raw = window.sessionStorage.getItem(JOIN_STATE_KEY);
+    if (!raw) {
+      return null;
+    }
+
+    const parsed = JSON.parse(raw);
+    if (
+      !parsed ||
+      typeof parsed.roomId !== 'string' ||
+      typeof parsed.nickname !== 'string' ||
+      typeof parsed.code !== 'string'
+    ) {
+      return null;
+    }
+
+    if (parsed.roomId !== currentRoomId) {
+      return null;
+    }
+
+    const nickname = parsed.nickname.trim();
+    const code = parsed.code.trim();
+    if (!nickname || !code) {
+      return null;
+    }
+
+    return { nickname, code };
+  } catch (_err) {
+    return null;
+  }
+}
+
+function joinWithCredentials(nickname, code, options = {}) {
+  const { silent = false, fromRestore = false } = options;
+
+  socket.emit('join-room', { roomId: currentRoomId, nickname, code }, (response) => {
+    if (!response?.ok) {
+      if (fromRestore) {
+        clearJoinState();
+      }
+      if (!silent) {
+        showToast(response?.error || '입장에 실패했습니다.');
+      }
+      return;
+    }
+
+    myUserId = typeof response.userId === 'string' ? response.userId : '';
+    applyLimits(response.limits);
+    clearMessages();
+    response.history.forEach(appendMessage);
+    renderUsers(response.users || []);
+    setJoinedState(true);
+    saveJoinState({ roomId: currentRoomId, nickname, code });
+    messageInput.focus();
+
+    if (!silent) {
+      showToast('채팅방에 입장했습니다.');
+    }
+  });
+}
+
 function setSidebarCollapsed(collapsed, options = {}) {
   const { persist = true } = options;
   sidebarCollapsed = Boolean(collapsed);
@@ -196,22 +279,7 @@ function joinRoom(event) {
 
   const nickname = nicknameInput.value.trim();
   const code = codeInput.value.trim();
-
-  socket.emit('join-room', { roomId: currentRoomId, nickname, code }, (response) => {
-    if (!response?.ok) {
-      showToast(response?.error || '입장에 실패했습니다.');
-      return;
-    }
-
-    myUserId = typeof response.userId === 'string' ? response.userId : '';
-    applyLimits(response.limits);
-    clearMessages();
-    response.history.forEach(appendMessage);
-    renderUsers(response.users || []);
-    setJoinedState(true);
-    messageInput.focus();
-    showToast('채팅방에 입장했습니다.');
-  });
+  joinWithCredentials(nickname, code);
 }
 
 function sendText(event) {
@@ -331,6 +399,16 @@ try {
 setSidebarCollapsed(sidebarCollapsed, { persist: false });
 applyLimits(DEFAULT_LIMITS);
 
+const savedJoinState = loadJoinStateForCurrentRoom();
+if (savedJoinState) {
+  nicknameInput.value = savedJoinState.nickname;
+  codeInput.value = savedJoinState.code;
+  joinWithCredentials(savedJoinState.nickname, savedJoinState.code, {
+    silent: true,
+    fromRestore: true
+  });
+}
+
 createRoomBtn.addEventListener('click', () => {
   moveToRoom(randomRoomId());
 });
@@ -373,6 +451,7 @@ leaveBtn.addEventListener('click', () => {
   if (joined) {
     socket.emit('leave-room');
   }
+  clearJoinState();
   setJoinedState(false);
   applyLimits(DEFAULT_LIMITS);
   myUserId = '';
