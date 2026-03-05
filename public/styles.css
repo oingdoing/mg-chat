@@ -96,6 +96,8 @@ textarea {
 
 textarea {
   resize: vertical;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 .btn {
@@ -205,6 +207,7 @@ textarea {
 }
 
 .chatMain {
+  position: relative;
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 12px;
@@ -213,18 +216,52 @@ textarea {
   height: clamp(420px, 68vh, 620px);
   min-height: 0;
   overflow: hidden;
+  background-color:#d1ddef;
+}
+
+.chatIconBtn {
+  position: absolute;
+  top: 10px;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.chatIconBtn:hover {
+  border-color: #b7c3d2;
+}
+
+.chatIconInfo {
+  left: 10px;
+}
+
+.chatIconLeave {
+  right: 10px;
+  font-weight: 700;
 }
 
 .messages {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 34px 0 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  background-color:#d1ddef;
 }
 
 .message {
@@ -232,18 +269,19 @@ textarea {
   width: fit-content;
   max-width: 80%;
   overflow-wrap: anywhere;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 5px 8px;
+  border: none;
+  border-radius: 10px;
+  padding: 5px 10px;
   background: #fff;
   font-size: 14px;
   line-height: 1.4;
+  box-shadow:1px 1px 6px rgba(0,0,0,0.1)
 }
 
 .message.mine {
   align-self: flex-end;
-  background: #eaf3ff;
-  border-color: #9bc0f7;
+  margin-right: 10px;
+  background: #fffd45;
 }
 
 .messageHeader {
@@ -267,8 +305,9 @@ textarea {
 }
 
 .message.system {
+  width:100%;
+  margin:0 auto;
   background: var(--system);
-  border-style: dashed;
   color: #001bd4;
   text-align: center;
 }
@@ -286,20 +325,6 @@ textarea {
 .messageForm {
   margin-top: 12px;
   display: grid;
-  gap: 8px;
-}
-
-.messageActions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.messageActionsLeft,
-.messageActionsRight {
-  display: flex;
-  align-items: center;
   gap: 8px;
 }
 
@@ -327,19 +352,5 @@ textarea {
 
   .chatMain {
     height: min(85vh, 880px);
-  }
-
-  .messageActions {
-    align-items: stretch;
-  }
-
-  .messageActionsLeft,
-  .messageActionsRight {
-    width: 100%;
-  }
-
-  .messageActionsLeft .btn,
-  .messageActionsRight .btn {
-    flex: 1;
   }
 }

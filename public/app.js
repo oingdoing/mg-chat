@@ -20,8 +20,6 @@ const userList = document.getElementById('userList');
 const messages = document.getElementById('messages');
 const messageForm = document.getElementById('messageForm');
 const messageInput = document.getElementById('messageInput');
-const imageBtn = document.getElementById('imageBtn');
-const imageInput = document.getElementById('imageInput');
 const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
 const leaveBtn = document.getElementById('leaveBtn');
 const shareLink = document.getElementById('shareLink');
@@ -265,7 +263,9 @@ function setSidebarCollapsed(collapsed, options = {}) {
   sidebarCollapsed = Boolean(collapsed);
   chatPanel.classList.toggle('sidebar-collapsed', sidebarCollapsed);
   roomInfoBlock.classList.toggle('hidden', sidebarCollapsed);
-  toggleSidebarBtn.textContent = sidebarCollapsed ? '정보 펼치기' : '정보 접기';
+  const toggleLabel = sidebarCollapsed ? '정보 펼치기' : '정보 접기';
+  toggleSidebarBtn.setAttribute('aria-label', toggleLabel);
+  toggleSidebarBtn.setAttribute('title', toggleLabel);
   toggleSidebarBtn.setAttribute('aria-expanded', String(!sidebarCollapsed));
 
   if (!persist) {
@@ -343,60 +343,6 @@ function sendText(event) {
   });
 }
 
-function sendImageFile(file) {
-  if (!joined) {
-    showToast('먼저 방에 입장해주세요.');
-    return;
-  }
-
-  if (!file) {
-    return;
-  }
-
-  if (!file.type.startsWith('image/')) {
-    showToast('이미지 파일만 전송할 수 있습니다.');
-    return;
-  }
-
-  const maxImageBytes = roomLimits.maxImageMB * 1024 * 1024;
-  if (file.size > maxImageBytes) {
-    showToast(`이미지는 ${roomLimits.maxImageMB}MB 이하만 전송할 수 있습니다.`);
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    const dataUrl = typeof reader.result === 'string' ? reader.result : '';
-    socket.emit('send-image', { dataUrl }, (response) => {
-      if (!response?.ok) {
-        showToast(response?.error || '이미지 전송 실패');
-        return;
-      }
-      showToast('이미지를 전송했습니다.');
-    });
-  };
-  reader.onerror = () => {
-    showToast('이미지를 읽을 수 없습니다.');
-  };
-  reader.readAsDataURL(file);
-}
-
-function handlePaste(event) {
-  const items = event.clipboardData?.items;
-  if (!items) {
-    return;
-  }
-
-  for (const item of items) {
-    if (item.type.startsWith('image/')) {
-      event.preventDefault();
-      const file = item.getAsFile();
-      sendImageFile(file);
-      return;
-    }
-  }
-}
-
 function handleMessageKeydown(event) {
   if (event.key !== 'Enter' || event.isComposing) {
     return;
@@ -452,22 +398,10 @@ goRoomForm.addEventListener('submit', (event) => {
 
 joinForm.addEventListener('submit', joinRoom);
 messageForm.addEventListener('submit', sendText);
-messageInput.addEventListener('paste', handlePaste);
 messageInput.addEventListener('keydown', handleMessageKeydown);
-
-imageBtn.addEventListener('click', () => {
-  imageInput.click();
-});
 
 toggleSidebarBtn.addEventListener('click', () => {
   setSidebarCollapsed(!sidebarCollapsed);
-});
-
-imageInput.addEventListener('change', () => {
-  if (imageInput.files && imageInput.files.length > 0) {
-    sendImageFile(imageInput.files[0]);
-  }
-  imageInput.value = '';
 });
 
 copyLinkBtn.addEventListener('click', async () => {
