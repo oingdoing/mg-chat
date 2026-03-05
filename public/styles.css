@@ -284,6 +284,7 @@ textarea {
   line-height: 1.4;
   box-shadow:1px 1px 6px rgba(0,0,0,0.1)
 }
+.message:last-child {margin-bottom:5px;}
 
 .message.mine {
   align-self: flex-end;
