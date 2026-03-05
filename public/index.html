@@ -95,12 +95,27 @@
             <ul id="messages" class="messages"></ul>
 
             <form id="messageForm" class="messageForm">
-              <textarea
-                id="messageInput"
-                rows="2"
-                maxlength="500"
-                placeholder="메시지를 입력하세요. Enter 전송 / Alt+Enter 줄바꿈 / Ctrl(Cmd)+V 이미지 붙여넣기"
-              ></textarea>
+              <input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden />
+              <button id="imageBtn" class="attachIconBtn" type="button" aria-label="이미지 첨부" title="이미지 첨부">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 5V19" />
+                  <path d="M5 12H19" />
+                </svg>
+              </button>
+              <div class="messageInputWrap">
+                <textarea
+                  id="messageInput"
+                  rows="2"
+                  maxlength="500"
+                  placeholder="메시지 입력"
+                ></textarea>
+                <button id="sendBtn" class="sendIconBtn" type="submit" aria-label="전송" title="전송">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M21 3L9 15" />
+                    <path d="M21 3L14 21L9 15L3 10L21 3Z" />
+                  </svg>
+                </button>
+              </div>
             </form>
           </section>
         </div>

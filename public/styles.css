@@ -96,6 +96,7 @@ textarea {
 
 textarea {
   resize: vertical;
+  padding-right: 50px;
   font-size: 14px;
   line-height: 1.4;
 }
@@ -210,7 +211,7 @@ textarea {
   position: relative;
   border: 1px solid var(--line);
   border-radius: 12px;
-  padding: 12px;
+  padding: 0 3px;
   display: grid;
   grid-template-rows: 1fr auto;
   height: clamp(420px, 68vh, 620px);
@@ -259,7 +260,7 @@ textarea {
 .messages {
   list-style: none;
   margin: 0;
-  padding: 34px 0 0;
+  padding: 34px 12px 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -338,8 +339,82 @@ textarea {
 
 .messageForm {
   margin-top: 12px;
-  display: grid;
+  padding-left: 6px;
+  display: flex;
+  align-items: center;
   gap: 8px;
+}
+
+.messageInputWrap {
+  position: relative;
+  flex: 1;
+}
+
+.attachIconBtn {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  background: #b8c8e1;
+  color: #101826;
+  cursor: pointer;
+  padding: 0;
+}
+
+.attachIconBtn:hover {
+  background: #9fb4d2;
+}
+
+.attachIconBtn svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#messageInput {
+  width: 100%;
+  padding-right: 48px;
+}
+
+.sendIconBtn {
+  position: absolute;
+  right: 8px;
+  top: calc(50% - 16px);
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #253648;
+  box-shadow:1px 1px 10px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+
+.sendIconBtn:hover {
+  background: #f3f6fa;
+  border-color: #607387;
+}
+
+.sendIconBtn svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: translateX(1px);
 }
 
 .toast {
@@ -354,6 +429,7 @@ textarea {
   font-size: 13px;
 }
 
+
 @media (max-width: 860px) {
   .chatHeader {
     flex-wrap: wrap;
@@ -365,7 +441,7 @@ textarea {
   }
 
   .chatMain {
-    height: min(85vh, 880px);
+    height: min(75vh, 700px);
   }
   .sidebar{
     position: fixed;

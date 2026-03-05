@@ -20,6 +20,8 @@ const userList = document.getElementById('userList');
 const messages = document.getElementById('messages');
 const messageForm = document.getElementById('messageForm');
 const messageInput = document.getElementById('messageInput');
+const imageBtn = document.getElementById('imageBtn');
+const imageInput = document.getElementById('imageInput');
 const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
 const themeToggleBtn = document.getElementById('themeToggleBtn');
 const leaveBtn = document.getElementById('leaveBtn');
@@ -464,6 +466,16 @@ joinForm.addEventListener('submit', joinRoom);
 messageForm.addEventListener('submit', sendText);
 messageInput.addEventListener('paste', handlePaste);
 messageInput.addEventListener('keydown', handleMessageKeydown);
+imageBtn.addEventListener('click', () => {
+  imageInput.click();
+});
+
+imageInput.addEventListener('change', () => {
+  if (imageInput.files && imageInput.files.length > 0) {
+    sendImageFile(imageInput.files[0]);
+  }
+  imageInput.value = '';
+});
 
 toggleSidebarBtn.addEventListener('click', () => {
   setSidebarCollapsed(!sidebarCollapsed);
