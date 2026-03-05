@@ -246,6 +246,11 @@ textarea {
   left: 10px;
 }
 
+.chatIconTheme {
+  right: 44px;
+  font-size: 13px;
+}
+
 .chatIconLeave {
   right: 10px;
   font-weight: 700;
@@ -282,6 +287,15 @@ textarea {
   align-self: flex-end;
   margin-right: 10px;
   background: #fffd45;
+}
+
+.chatPanel.theme-light .chatMain,
+.chatPanel.theme-light .messages {
+  background-color: #f1f1f1;
+}
+
+.chatPanel.theme-light .message.mine {
+  background: #d8d8d8;
 }
 
 .messageHeader {

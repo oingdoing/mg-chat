@@ -21,6 +21,7 @@ const messages = document.getElementById('messages');
 const messageForm = document.getElementById('messageForm');
 const messageInput = document.getElementById('messageInput');
 const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+const themeToggleBtn = document.getElementById('themeToggleBtn');
 const leaveBtn = document.getElementById('leaveBtn');
 const shareLink = document.getElementById('shareLink');
 const copyLinkBtn = document.getElementById('copyLinkBtn');
@@ -279,6 +280,15 @@ function setSidebarCollapsed(collapsed, options = {}) {
   }
 }
 
+function setLightThemeEnabled(enabled) {
+  const isLight = Boolean(enabled);
+  chatPanel.classList.toggle('theme-light', isLight);
+  const label = isLight ? '기본 테마로 변경' : '라이트 테마로 변경';
+  themeToggleBtn.setAttribute('aria-label', label);
+  themeToggleBtn.setAttribute('title', label);
+  themeToggleBtn.setAttribute('aria-pressed', String(isLight));
+}
+
 function showHome() {
   homeSection.classList.remove('hidden');
   chatSection.classList.add('hidden');
@@ -380,6 +390,7 @@ try {
 }
 setSidebarCollapsed(sidebarCollapsed, { persist: false });
 applyLimits(DEFAULT_LIMITS);
+setLightThemeEnabled(chatPanel.classList.contains('theme-light'));
 
 const savedJoinState = loadJoinStateForCurrentRoom();
 if (savedJoinState) {
@@ -402,6 +413,11 @@ messageInput.addEventListener('keydown', handleMessageKeydown);
 
 toggleSidebarBtn.addEventListener('click', () => {
   setSidebarCollapsed(!sidebarCollapsed);
+});
+
+themeToggleBtn.addEventListener('click', () => {
+  const nextIsLight = !chatPanel.classList.contains('theme-light');
+  setLightThemeEnabled(nextIsLight);
 });
 
 copyLinkBtn.addEventListener('click', async () => {
