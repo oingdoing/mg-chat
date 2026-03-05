@@ -353,6 +353,59 @@ function sendText(event) {
   });
 }
 
+function sendImageFile(file) {
+  if (!joined) {
+    showToast('먼저 방에 입장해주세요.');
+    return;
+  }
+
+  if (!file) {
+    return;
+  }
+
+  if (!file.type.startsWith('image/')) {
+    showToast('이미지 파일만 전송할 수 있습니다.');
+    return;
+  }
+
+  const maxImageBytes = roomLimits.maxImageMB * 1024 * 1024;
+  if (file.size > maxImageBytes) {
+    showToast(`이미지는 ${roomLimits.maxImageMB}MB 이하만 전송할 수 있습니다.`);
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    const dataUrl = typeof reader.result === 'string' ? reader.result : '';
+    socket.emit('send-image', { dataUrl }, (response) => {
+      if (!response?.ok) {
+        showToast(response?.error || '이미지 전송 실패');
+        return;
+      }
+      showToast('이미지를 전송했습니다.');
+    });
+  };
+  reader.onerror = () => {
+    showToast('이미지를 읽을 수 없습니다.');
+  };
+  reader.readAsDataURL(file);
+}
+
+function handlePaste(event) {
+  const items = event.clipboardData?.items;
+  if (!items) {
+    return;
+  }
+
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      event.preventDefault();
+      sendImageFile(item.getAsFile());
+      return;
+    }
+  }
+}
+
 function handleMessageKeydown(event) {
   if (event.key !== 'Enter' || event.isComposing) {
     return;
@@ -409,6 +462,7 @@ goRoomForm.addEventListener('submit', (event) => {
 
 joinForm.addEventListener('submit', joinRoom);
 messageForm.addEventListener('submit', sendText);
+messageInput.addEventListener('paste', handlePaste);
 messageInput.addEventListener('keydown', handleMessageKeydown);
 
 toggleSidebarBtn.addEventListener('click', () => {

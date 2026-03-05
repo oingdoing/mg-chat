@@ -321,12 +321,12 @@ textarea {
 .message.system {
   width:100%;
   margin:0 auto;
-  background: var(--system);
-  color: #001bd4;
+  background: #b8c8e1;
+  color: #232323;
   text-align: center;
 }
 .message.system .messageHeader{
-  justify-content: center;
+  display:none;
 }
 
 .message img {
