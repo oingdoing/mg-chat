@@ -267,7 +267,8 @@ textarea {
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  background-color:#d1ddef;
+  background-color: transparent;
+  scrollbar-color: #9fb0c5 transparent;
 }
 
 .message {
@@ -290,9 +291,12 @@ textarea {
   background: #fffd45;
 }
 
-.chatPanel.theme-light .chatMain,
-.chatPanel.theme-light .messages {
+.chatPanel.theme-light .chatMain {
   background-color: #f1f1f1;
+}
+
+.messages::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .chatPanel.theme-light .message.mine {
