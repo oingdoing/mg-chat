@@ -31,6 +31,7 @@ const toast = document.getElementById('toast');
 const socket = io();
 const SIDEBAR_PREF_KEY = 'ephemeral_chat_sidebar_collapsed';
 const JOIN_STATE_KEY = 'ephemeral_chat_join_state_v1';
+const OTHER_NICKNAME_COLORS = ['#f3ed84', '#b3dfe8', '#cfedd3'];
 const DEFAULT_LIMITS = {
   maxImageMB: 2,
   maxTextLength: 500
@@ -40,6 +41,36 @@ let currentRoomId = roomIdFromPath;
 let myUserId = '';
 let sidebarCollapsed = false;
 let roomLimits = { ...DEFAULT_LIMITS };
+let otherNicknameColorByKey = new Map();
+let otherNicknameColorOrder = shuffleColors(OTHER_NICKNAME_COLORS);
+
+function shuffleColors(colors) {
+  const shuffled = [...colors];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+function resetOtherNicknameColors() {
+  otherNicknameColorByKey = new Map();
+  otherNicknameColorOrder = shuffleColors(OTHER_NICKNAME_COLORS);
+}
+
+function getOtherNicknameColor(nickname) {
+  const key = nickname.trim().toLowerCase();
+  if (!key) {
+    return '';
+  }
+
+  if (!otherNicknameColorByKey.has(key)) {
+    const nextColorIndex = otherNicknameColorByKey.size % otherNicknameColorOrder.length;
+    otherNicknameColorByKey.set(key, otherNicknameColorOrder[nextColorIndex]);
+  }
+
+  return otherNicknameColorByKey.get(key) || '';
+}
 
 function showToast(text) {
   toast.textContent = text;
@@ -73,8 +104,10 @@ function clearMessages() {
 
 function appendMessage(message) {
   const li = document.createElement('li');
-  li.className = `message ${message.type === 'system' ? 'system' : ''}`;
-  if (message.type !== 'system' && myUserId && message.userId === myUserId) {
+  const isSystem = message.type === 'system';
+  const isMine = !isSystem && myUserId && message.userId === myUserId;
+  li.className = `message ${isSystem ? 'system' : ''}`;
+  if (isMine) {
     li.classList.add('mine');
   }
 
@@ -83,7 +116,14 @@ function appendMessage(message) {
 
   const name = document.createElement('span');
   name.className = 'messageName';
-  name.textContent = message.type === 'system' ? '안내' : message.nickname || '익명';
+  const displayName = isSystem ? '안내' : message.nickname || '익명';
+  name.textContent = displayName;
+  if (!isSystem && !isMine) {
+    const backgroundColor = getOtherNicknameColor(displayName);
+    if (backgroundColor) {
+      name.style.backgroundColor = backgroundColor;
+    }
+  }
 
   const time = document.createElement('span');
   time.className = 'messageTime';
@@ -207,6 +247,7 @@ function joinWithCredentials(nickname, code, options = {}) {
     myUserId = typeof response.userId === 'string' ? response.userId : '';
     applyLimits(response.limits);
     clearMessages();
+    resetOtherNicknameColors();
     response.history.forEach(appendMessage);
     renderUsers(response.users || []);
     setJoinedState(true);
@@ -446,6 +487,7 @@ leaveBtn.addEventListener('click', () => {
   setJoinedState(false);
   applyLimits(DEFAULT_LIMITS);
   myUserId = '';
+  resetOtherNicknameColors();
   clearMessages();
   renderUsers([]);
   showToast('채팅방에서 나왔습니다.');
@@ -468,5 +510,6 @@ socket.on('disconnect', () => {
     setJoinedState(false);
     applyLimits(DEFAULT_LIMITS);
     myUserId = '';
+    resetOtherNicknameColors();
   }
 });
